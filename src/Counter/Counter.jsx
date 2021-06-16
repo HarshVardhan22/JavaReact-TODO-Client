@@ -1,10 +1,15 @@
 import React from "react";
+import { useState } from "react";
 import { Button } from "react-bootstrap";
-function Counter() {
+const Counter=()=> {
+    const [counter,setCounter] = useState(0);
+    function increment(){
+        setCounter(counter+1);
+    }
   return (
     <div>
       <h1>Counter</h1>
-      <Button className="btn-primary">+1</Button>
+      <Button className="btn-primary" onClick={increment}>{counter}</Button>
     </div>
   );
 }
