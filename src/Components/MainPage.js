@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import Form from "./Form";
-import Task from "./Task";
+
 import firebaseDb from "../firebase";
 
 const MainPage = () => {

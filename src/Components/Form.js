@@ -1,34 +1,31 @@
-import React, { useState, useEffect} from "react";
-import { Button } from "react-bootstrap";
+import React, { useState, useEffect } from "react";
 import firebaseDb from "../firebase";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faEdit, faPen, faTrash } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrash } from "@fortawesome/free-solid-svg-icons";
 
 const Form = () => {
-
   const [task, setTask] = useState("");
-  const [id,setId] = useState();
+
   const handleTask = (e) => {
     setTask([e.target.value]);
   };
 
   const addTask = (e) => {
     e.preventDefault();
-    addOrEdit(task);
+    if (task != "") addOrEdit(task);
     setTask("");
   };
 
+  const deleteTask = (key) => {
+    firebaseDb.child(`task/${key}`).remove((err) => {
+      if (err) console.log(err);
+    });
+  };
   const addOrEdit = (obj) => {
     firebaseDb.child("task").push(obj, (err) => {
       if (err) console.log(err);
     });
   };
-
-  const update = (id,e) =>{
-    console.log(id);
-    console.log(e.target.value);
-    e.target.value="";
-  }
 
   const [taskObject, setTaskObject] = useState({});
   useEffect(() => {
@@ -37,6 +34,7 @@ const Form = () => {
         setTaskObject({
           ...snapshot.val(),
         });
+      else setTaskObject({});
     });
   }, []);
 
@@ -50,40 +48,41 @@ const Form = () => {
             name="task"
             value={task}
             onChange={handleTask}
-          />       
+          />
         </div>
         <div className="form-group">
           <button
             type="submit"
             className="btn btn-success btn-block"
-            style={{width:"100px",marginLeft:"40%"}}
-          >Add</button>
+            style={{ width: "100px", marginLeft: "40%" }}
+          >
+            Add
+          </button>
         </div>
-       
+
         <div>
-        {Object.keys(taskObject).map((id) => {
-        return (         
-            <div className="row">            
-              <div className="col-6 offset-3">
-              <input
-                className="form-control mt-2 text-dark"
-                type="text"
-                style={{ backgroundColor: "#FF0000" }}
-                value={taskObject[id][0]}
-                onChange={(e)=>{update(id,e)}}
-              />
+          {Object.keys(taskObject).map((id) => {
+            return (
+              <div className="row" key={id}>
+                <div className="col-6 offset-3">
+                  <p
+                    className="alert mt-2 text-dark"
+                    type="text"
+                    style={{ backgroundColor: "#FF0000" }}
+                  >
+                    {taskObject[id][0]}
+                  </p>
+                </div>
+                <FontAwesomeIcon
+                  icon={faTrash}
+                  onClick={() => deleteTask(id)}
+                  style={{ marginTop: "3%" }}
+                />
               </div>
-              {/* <FontAwesomeIcon icon={faPen} style={{marginTop:"3%",marginRight:"3%"}}/> */}
-              <FontAwesomeIcon icon={faTrash} style={{marginTop:"3%"}}/>
-            </div>                   
-        );
-      })} 
-        
+            );
+          })}
         </div>
       </form>
-      
-      
-
     </>
   );
 };
